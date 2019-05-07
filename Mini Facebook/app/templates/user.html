@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <table class="table table-hover">
+        <tr>
+            <td width="256px"><img src="{{ user.avatar(256) }}"></td>
+            <td>
+                <h1>User : {{ user.username }} </h1>
+        {% if user.about_me %}
+             <p> About Me : {{ user.about_me }}  </p>
+        {% endif %}
+        {% if user.last_seen %}
+             <p>Last Seen : {{ moment(user.last_seen).format('LLL') }} </p>
+        {% endif %}
+        {% if user.relationship_status %}
+             <p> Relationship Status : {{ user.relationship_status }} </p>
+        {% endif %}
+        {% if user.gender %}
+             <p> Gender : {{ user.gender }} </p>
+        {% endif %}
+        {% if user.country %}
+             <p> Country : {{ user.country }} </p>
+        {% endif %}
+        <p>{{ user.followers.count() }} followers, {{ user.followed.count() }} following.</p>
+        <a href="{{ url_for('follow',username = user.username) }}" > Follow </a>
+        {% if user != current_user %}
+        <a href="{{ url_for('send_message',receiver = user.username) }}" > Send Message </a>
+         {% endif %}
+            </td>
+        </tr>
+    </table>
+    {% for post in posts %}
+<table class="table table-hover">
+        <tr>
+            <td width="70px">
+                <a href="{{ url_for('user', username=post.author.username) }}">
+                    <img src="{{ post.author.avatar(70) }}" />
+                </a>
+            </td>
+            <td>
+                <a href="{{ url_for('user', username=post.author.username) }}">
+                    {{ post.author.username }}
+                </a>
+                said {{ moment(post.timestamp).fromNow() }}:
+                <br>
+                {{ post.body }}
+            </td>
+        </tr>
+</table>
+    {% endfor %}
+    {% if user != current_user %}
+                <p>
+                    <a href="{{ url_for('send_message',
+                                        receiver=user.username) }}">
+
+                    </a>
+                </p>
+    {% endif %}
+    <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous{% if not prev_url %} disabled{% endif %}">
+                <a href="{{ prev_url or '#' }}">
+                    <span aria-hidden="true">&larr;</span> Newer posts
+                </a>
+            </li>
+            <li class="next{% if not next_url %} disabled{% endif %}">
+                <a href="{{ next_url or '#' }}">
+                    Older posts <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}
